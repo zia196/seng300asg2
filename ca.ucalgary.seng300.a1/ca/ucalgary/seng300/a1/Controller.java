@@ -1,12 +1,12 @@
-package ca.ucalgary.seng300.a1;
+package ca.ucalgary.seng300.a2;
 
-import org.lsmr.vending.hardware.*;
-
-import static org.junit.Assert.fail;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.lsmr.vending.*;
+import org.lsmr.vending.hardware.*;
 
 /**
  * @author Vending Solutions Incorporated
@@ -15,12 +15,34 @@ import org.lsmr.vending.*;
  *
  */
 
+
+
 public class Controller {
+	
+	//displays "Hi there" if no change is in the machine
+	public void sayHello(){
+		if(total == 0){
+	   client.getDisplay().display("Hi There!");
+		}
+		
+	}
+	//changes the display to show "", used in side with sayHello to alternate 
+	public void stopSayingHello(){
+		if(total == 0){
+			client.getDisplay().display(""); //just make this nothing 
+			
+	       }
+	}
+	//call this after every test to turn off the timers
+	public void cleanUpTimers(){
+		timer1.cancel();
+		timer2.cancel();
+	}
 
 		/**
 		 * Set-up machine variables
 		 */
-	
+	public static String messageBeingDisplayed; //this is just for testing, no other way i can think of
 	private int total;
 	private static boolean validCoin;
 	private VendingMachine client;
@@ -28,20 +50,24 @@ public class Controller {
 	private MyButtonListener buttonListener;
 	private MyPopRackListener popRackListener;
 	private MyDeliveryChuteListener chuteListener;
+	private MyDisplayListener displayListener; //display listener 
 	private static boolean coinSlotEnabled;
 	private static boolean buttonEnabled;
+	Timer timer1 = new Timer(); //timers
+	Timer timer2 = new Timer();
 	
 	//Controller constructor to hook up all parts in the vending machine together
 	public Controller(){
 		total = 0;
 		validCoin = false;
 		coinSlotEnabled = true;
+		 
 		
 		int[] CAD = { 5, 10, 25, 100, 200 };
 
 		//According to Clients specifications:
 		//Canadian Currency, 6 types of pop, capacity of coinRack=15, 10 pops per rack, 200 coins in receptacle
-		client = new VendingMachine(CAD, 6, 15, 10, 200);
+		client = new VendingMachine(CAD, 6, 15, 10, 200, 10, 10);	//10 is delivery chute capacity and coin return capacity - temp values because its not my problem
 
 		slotListener = new MySlotListener();
 		client.getCoinSlot().register(slotListener);
@@ -72,6 +98,31 @@ public class Controller {
 		}
 
 		client.configure(popCanNames, popCanCosts);
+		
+		//added code - this is the portion that changes to display while the credit value == 0
+		//every 15 second interval will have "Hi there" for 5 seconds then nothing for 10
+		//effective 5 sec display of hi followed by 10 seconds of blank
+
+		displayListener = new MyDisplayListener();
+		client.getDisplay().register(displayListener);
+		//no delay(secretly, there is a 200ms delay such that the thread doesnt display hi before the coin has been able to be inserted
+		//, says hi every 15 seconds
+        timer1.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                sayHello();
+            }
+        }, 200, 15000);
+        
+       //5 sec delay, cleans up the mesasge hi
+        timer2.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                stopSayingHello();
+            }
+        }, 5200, 15000);
 		
 	}
 	
@@ -222,7 +273,7 @@ public class Controller {
 	 * A class for the ButtonListener to get events from the machine
 	 * 
 	 */
-	private static class MyButtonListener implements SelectionButtonListener {
+	private static class MyButtonListener implements PushButtonListener {
 
 		@Override
 		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
@@ -236,9 +287,11 @@ public class Controller {
 			buttonEnabled = false;
 		}
 
+
 		@Override
-		public void pressed(SelectionButton button) {
+		public void pressed(PushButton button) {
 			System.out.println("pressed");
+			
 		}
 	}
 
@@ -339,6 +392,27 @@ public class Controller {
 
 		}
 
+	}
+	private static class MyDisplayListener implements DisplayListener {
+
+		@Override
+		public void enabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void disabled(AbstractHardware<? extends AbstractHardwareListener> hardware) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void messageChange(Display display, String oldMessage, String newMessage) {
+			System.out.println("new message is ++\n" + newMessage); //for testing remove this when not needed 
+			messageBeingDisplayed = newMessage;						//for testing
+			
+		}
 	}
 
 }
