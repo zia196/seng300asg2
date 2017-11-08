@@ -1,23 +1,17 @@
+package ca.ucalgary.seng300.a2.test;
 
-package ca.ucalgary.seng300.a1.test;
-
-import org.lsmr.vending.*;
-
-import org.lsmr.vending.hardware.DeliveryChute;
-import org.lsmr.vending.hardware.EmptyException;
-import org.lsmr.vending.hardware.PopCanChannel;
-
-import com.sun.org.apache.bcel.internal.classfile.LocalVariableTable;
-
-import org.lsmr.vending.hardware.DisabledException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.lsmr.vending.Coin;
+import org.lsmr.vending.hardware.DeliveryChute;
+import org.lsmr.vending.hardware.DisabledException;
+import org.lsmr.vending.hardware.PopCanChannel;
 
-import ca.ucalgary.seng300.a1.Controller;
+import ca.ucalgary.seng300.a2.Controller;
 
 /**
  * @author Vending Solutions Incorporated
@@ -28,6 +22,8 @@ public class ControllerTest {
 	private Controller myVending;
 	private Coin coin;
 
+	
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -38,16 +34,41 @@ public class ControllerTest {
 
 	}
 
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
 	public void tearDown() throws Exception {
+		myVending.cleanUpTimers();
 	}
 
+	//** MATTHEW, Teardown requires to clean up the timers, the 2 test methods make sure the display is working properly
+	//comment them out when doing your own testing because they take 12 seconds to finish
 	/**
 	 * Test method for {@link ca.ucalgary.seng300.a1.Controller#Controller()}.
+	 * @throws InterruptedException 
 	 */
+	@Test
+	public void passiveDisply() throws InterruptedException{
+		Thread.sleep(3*1000);//3 seconds into the simulation, no coins entered
+		assertEquals(myVending.messageBeingDisplayed, "Hi There!");
+		Thread.sleep(3*1000); //total of 6 seconds in, no longer displaying hi
+		assertEquals(myVending.messageBeingDisplayed, "");
+	}
+	//important - when the display is made to display the coin amount when some coin is inserted
+	//this test case will have to change to reflect that
+	@Test
+	public void passiveDisplyCoinInsterted() throws InterruptedException{
+		Coin coin = new Coin(100);
+		myVending.insertCoin(coin);
+		Thread.sleep(3*1000);//credit is non 0 so null should still be displayed
+		assertEquals(myVending.messageBeingDisplayed, null);
+		Thread.sleep(3*1000); 
+		assertEquals(myVending.messageBeingDisplayed, null);
+	}
+	//**END, MATTHEW
+	
 	@Test
 	public void testController() {
 		System.out.println(myVending.getTotal());
