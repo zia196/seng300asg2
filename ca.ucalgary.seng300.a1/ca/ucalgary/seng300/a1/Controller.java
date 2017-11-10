@@ -126,6 +126,13 @@ public class Controller {
 		
 	}
 	
+  	/**
+   	* Used for testing purposes, set a specified total credit
+   	* @param credit
+   	*/
+  	public void setTotal(int credit) {
+  	  total = credit;
+  	}
 	
 	/**
 	 * Add to the total when a coin has been inserted
@@ -180,6 +187,44 @@ public class Controller {
 
 		
 	}
+	
+	  /**
+	   * Checks to see if change is available against the value inputed
+	   * @param value is the value to be checked. Use getTotal to check for change for current credit
+	   * @return boolean value, true if there's enough change, false if insufficient.
+	   */
+	  public boolean checkChange(int value) {
+	    	int nickelTotal = client.getCoinRackForCoinKind(5).size();
+	    	int dimeTotal = client.getCoinRackForCoinKind(10).size();
+	    	int quarterTotal = client.getCoinRackForCoinKind(25).size();
+	    	int loonieTotal = client.getCoinRackForCoinKind(100).size();
+	    	int toonieTotal = client.getCoinRackForCoinKind(200).size();
+	    	int changeRequired = value;
+	    	while(changeRequired >= 200 && toonieTotal > 0) {
+	      		changeRequired -= 200;
+	      		toonieTotal--;
+	    	}
+	    	while(changeRequired >= 100 && loonieTotal > 0) {
+	      		changeRequired -= 100;
+	      		loonieTotal--;
+	    	}
+	    	while(changeRequired >= 25 && quarterTotal > 0) {
+	      		changeRequired -= 25;
+	      		quarterTotal--;
+	    	}
+	    	while(changeRequired >= 10 && dimeTotal > 0) {
+	      		changeRequired -= 10;
+	      		dimeTotal--;
+	    	}
+	    	while(changeRequired >= 5 && nickelTotal > 0) {
+	      		changeRequired -= 5;
+	      		nickelTotal--;
+	    	}
+	    	if(changeRequired == 0) {
+	      		return true;
+	    	}
+	    	return false;
+	  }
 	
 	/**
 	 * User has entered a coin. Insert it into the hardware and listen to whether its valid. Update total accordingly.
