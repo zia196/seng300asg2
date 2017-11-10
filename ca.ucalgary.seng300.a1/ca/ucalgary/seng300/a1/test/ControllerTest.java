@@ -290,5 +290,96 @@ public class ControllerTest {
 		myVending.getVending().getSelectionButton(0).enable();
 		assertEquals(true, myVending.buttonEnabled());
 	}
+	
+	//**PRESTON, the 8 test methods check to see if checkChange works properly. Had 5 cases to check if each
+	//  individual coin check is working properly
+	/**
+	 * Tests a standard case where every value is used to check for sufficient change
+	 */  
+	@Test
+	public void testEnoughChange() {
+		int[] coins = {15,15,15,15,15};
+		myVending.getVending().loadCoins(coins);
+		myVending.setTotal(750);
+	   	assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests to see if nickel check is working properly
+	 */
+	@Test
+	public void testNickelOnly() {
+	   	int[] coins = {15,0,0,0,0};
+	   	myVending.getVending().loadCoins(coins);
+	   	myVending.setTotal(35);
+	   	assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests to see if dime check is working properly
+	 */
+	@Test
+	public void testDimeOnly() {
+	   	int[] coins = {0,15,0,0,0};
+	   	myVending.getVending().loadCoins(coins);
+	   	myVending.setTotal(50);
+	   	assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests to see if quarter check is working properly
+	 */
+	@Test
+	public void testQuarterOnly() {
+	int[] coins = {0,0,15,0,0};
+	    myVending.getVending().loadCoins(coins);
+	    myVending.setTotal(250);
+	    assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests to see if loonie check is working properly
+	 */
+	@Test
+	public void testLoonieOnly() {
+		int[] coins = {0,0,0,15,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.setTotal(700);
+		assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests to see if toonie check is working properly
+	 */
+	@Test
+	public void testToonieOnly() {
+		int[] coins = {0,0,0,0,15};
+		myVending.getVending().loadCoins(coins);
+		myVending.setTotal(800);
+		assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests for insufficient change
+	 */
+	@Test
+	public void testInsufficientChange() {
+		int[] coins = {0,2,1,1,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.setTotal(150);
+		assertEquals(false,myVending.checkChange(myVending.getTotal()));
+	}
+
+	/**
+	 * Tests when there is just enough change in the machine
+	 */
+	@Test
+	public void testJustEnoughChange() {
+		int[] coins = {1,2,1,1,0};
+		myVending.getVending().loadCoins(coins);
+		myVending.setTotal(150);
+		assertEquals(true,myVending.checkChange(myVending.getTotal()));
+	}
+	// END
 
 }
