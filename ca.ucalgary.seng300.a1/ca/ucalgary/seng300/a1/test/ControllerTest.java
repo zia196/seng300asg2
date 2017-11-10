@@ -67,6 +67,18 @@ public class ControllerTest {
 		Thread.sleep(3*1000); 
 		assertEquals(myVending.messageBeingDisplayed, null);
 	}
+	
+	@Test
+	public void creditDisply(){
+		Coin coin2 = new Coin(3);
+		Coin coin = new Coin(100);
+		Coin coin3 = new Coin(5);
+		myVending.insertCoin(coin);
+		//myVending.insertCoin(coin2); //doesnt work because the return thingy is "broken"
+		assertEquals(myVending.messageBeingDisplayed,"Credit: $1.00");
+		myVending.insertCoin(coin3);
+		assertEquals(myVending.messageBeingDisplayed,"Credit: $1.05");
+	}
 	//**END, MATTHEW
 	
 	@Test
