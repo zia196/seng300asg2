@@ -33,6 +33,23 @@ public class Controller {
 			
 	       }
 	}
+	
+	public void displayTotal(){
+		if(total != 0){
+			double workingtotal = (double)total;
+			double dollars = 0;
+			double cents = 0;
+			while(workingtotal >= 100){
+				dollars++;
+				workingtotal = workingtotal - 100;
+			}
+			cents = workingtotal/100;
+			workingtotal = dollars + cents;
+			client.getDisplay().display(String.format("Credit: $%.2f", workingtotal)); //just make this nothing 
+			
+	       }
+	}
+	
 	//call this after every test to turn off the timers
 	public void cleanUpTimers(){
 		timer1.cancel();
@@ -148,6 +165,7 @@ public class Controller {
 	 */
 	private void incrementTotal(int coin){
 		total += coin;
+		displayTotal();
 	}
 	
 	/**
@@ -175,7 +193,8 @@ public class Controller {
 	 */
 	public void decrementTotal(int price) throws SimulationException{
 		if (total>price) {
-		total -= price;}
+		total -= price;
+		displayTotal();}
 		else throw new SimulationException("Decrement cannot result in total being a negative value");
 
 		
